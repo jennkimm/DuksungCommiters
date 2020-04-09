@@ -77,9 +77,7 @@
            //유저 단위
            for(let i=0; i<username.length ; i++) {
                 axios.get('https://api.github.com/users/'+username[i]+'/repos', {
-                headers: {
-                    'Authorization': 'token 71e788df26fee05b99e378fe6dd9feba1f2613b1'
-                }
+                
                 }).then(res => {
                     let sum=0;
 
@@ -94,9 +92,6 @@
 
                         axios.get('https://api.github.com/repos/'+((res.data)[t].owner).login+'/'+(res.data)[t].name+'/commits', {
                         params: { since: event.toISOString() },
-                        headers: {
-                            'Authorization': 'token 71e788df26fee05b99e378fe6dd9feba1f2613b1'
-                        }
                         }).then(res=>{
                             let commit_cnt = (res.data).length;
                             sum+=commit_cnt;
