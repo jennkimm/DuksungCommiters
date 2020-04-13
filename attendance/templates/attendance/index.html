@@ -77,7 +77,9 @@
            //유저 단위
            for(let i=0; i<username.length ; i++) {
                 axios.get('https://api.github.com/users/'+username[i]+'/repos', {
-                
+                headers: {
+                    'Authorization': 'token '
+                }
                 }).then(res => {
                     let sum=0;
 
@@ -88,10 +90,13 @@
                         let month = now.getMonth();
                         let date = now.getDate();
                         const event = new Date(year,month,date-4);
-                        //console.log(event);
+                        console.log(event);
 
                         axios.get('https://api.github.com/repos/'+((res.data)[t].owner).login+'/'+(res.data)[t].name+'/commits', {
                         params: { since: event.toISOString() },
+                        headers: {
+                            'Authorization': 'token '
+                        }
                         }).then(res=>{
                             let commit_cnt = (res.data).length;
                             sum+=commit_cnt;
@@ -105,11 +110,20 @@
            }).then(function() {
                 setTimeout(function() {
                     var cnt=0;
+                    let today_attendance_html;
                     for(var u=0;u<username.length;u++){
                         if(cc[u]!==0){
                             cnt+=1;
                         }
+                        #오늘 출석했다면 배경칠하기
+                        if(cc[u]>0){
+                            console.log('.users:nth-child('+u+')');
+                            $('.user-profile:nth-child('+(u+1)+')').css('background-color', "#9f102c");
+
+                        }
                     }
+
+
                     let progress_rate = Math.round(progressed_day/total_days*100);
 
                     google.charts.setOnLoadCallback(draw_progress(progress_rate));
@@ -212,8 +226,8 @@
             <div class="users">
                 {% for list in users %}
                 <div class="user-profile">
-                    <img src={{ list.avartar_url }} alt="avartar url" > <br>
-                    <p>{{ list.userlogin }}</p>
+                        <img src={{ list.avartar_url }} alt="avartar url" > <br>
+                        <p>{{ list.userlogin }}</p>
                 </div>
                 {% endfor %}
             </div>
