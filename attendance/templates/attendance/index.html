@@ -30,6 +30,13 @@
         const last_day = new Date(2020, 4, 30);
         var progressed_day;
 
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = now.getMonth();
+        let date = now.getDate();
+        var event = new Date(year,month,date);
+        console.log(event);
+
 
         // 출석부 날짜 범위 2020.04.10 ~ 어제
 
@@ -51,8 +58,6 @@
          }
 
          setCalendar();
-
-
 
         //사용자, 커밋 수 가져오기
         new Promise(function (res, rej) {
@@ -78,24 +83,19 @@
            for(let i=0; i<username.length ; i++) {
                 axios.get('https://api.github.com/users/'+username[i]+'/repos', {
                 headers: {
-                    'Authorization': 'token '
+                    'Authorization': 'token 4cbefe0b92b3f1d7e639c197ace645761ade1a24'
                 }
                 }).then(res => {
                     let sum=0;
 
                     // 저장소 단위
                     for(var t=0;t< (res.data).length ; t++) {
-                        let now = new Date();
-                        let year = now.getFullYear();
-                        let month = now.getMonth();
-                        let date = now.getDate();
-                        const event = new Date(year,month,date-4);
-                        console.log(event);
+                        // 날짜 있었던 자리
 
                         axios.get('https://api.github.com/repos/'+((res.data)[t].owner).login+'/'+(res.data)[t].name+'/commits', {
                         params: { since: event.toISOString() },
                         headers: {
-                            'Authorization': 'token '
+                            'Authorization': 'token 4cbefe0b92b3f1d7e639c197ace645761ade1a24'
                         }
                         }).then(res=>{
                             let commit_cnt = (res.data).length;
@@ -110,12 +110,14 @@
            }).then(function() {
                 setTimeout(function() {
                     var cnt=0;
+
                     let today_attendance_html;
+
                     for(var u=0;u<username.length;u++){
                         if(cc[u]!==0){
                             cnt+=1;
                         }
-                        #오늘 출석했다면 배경칠하기
+                        //오늘 출석했다면 배경칠하기
                         if(cc[u]>0){
                             console.log('.users:nth-child('+u+')');
                             $('.user-profile:nth-child('+(u+1)+')').css('background-color', "#9f102c");
@@ -123,13 +125,27 @@
                         }
                     }
 
+                    //오늘의 출석부
+                    today_attendance_html+= `<td>${month+1}/${date}</td>`;
+                    for(var g=0;g<username.length;g++){
+                        if(cc[g]==0) {
+                            today_attendance_html+=`<td>X</td> `;
+                        }
+
+                        else {
+                            today_attendance_html+=`<td>O</td> `;
+                        }
+                    }
+
+                    $("#attendees").html(today_attendance_html);
+
 
                     let progress_rate = Math.round(progressed_day/total_days*100);
 
                     google.charts.setOnLoadCallback(draw_progress(progress_rate));
                     google.charts.setOnLoadCallback(draw_attend_noshow(username.length, cnt));
 
-                }, 3000);
+                }, 3500);
            });
         });
 
@@ -207,6 +223,8 @@
 
         }
 
+
+
 </script>
 </head>
 <body>
@@ -241,6 +259,21 @@
             <div id="circle-progress"></div>
             <div id="attend_noshow_div"></div>
             <div id="container"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="chart">
+            <h2>오늘의 출석부</h2>
+            <table>
+                <tr id="table-title">
+                    <td>User</td>
+                    {% for list in users %}
+                        <td>{{ list.userlogin }}</td>
+                    {% endfor %}
+                    </tr>
+                <tr id="attendees"></tr>
+            </table>
         </div>
     </div>
 
