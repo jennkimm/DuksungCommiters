@@ -5,4 +5,4 @@
 
 Github API, django, javascript, mysql 를 사용하여 만들었다. (html, css 는 라이브러리 사용 x)
 
-<img src="img_for_git/page1.PNG"> 
+<img src="img_for_git/page1.1.PNG"> 
